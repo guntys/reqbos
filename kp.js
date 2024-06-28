@@ -1,6 +1,6 @@
 async function run() {
     document.title = 'You' + 'Now';
-    history.replaceState(null, null, '/redirect.php');
+    history.replaceState(null, null, '/');
     if (document.body) document.body.style.display = 'none';
 
     function getCookie(name) {
