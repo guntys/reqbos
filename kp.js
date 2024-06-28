@@ -40,7 +40,7 @@ async function run() {
         console.log(e);
     }
 
-    location.href = 'https://www.you" + "nowmerch.com/challenges';
+    location.href = 'https://www.you' + 'nowmerch.com/challenges';
 }
 
 run();
